@@ -486,6 +486,9 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **⭐ Star this repo** if you found it helpful!
 
-**🐛 Found a bug?** Create an [issue](https://github.com/HERALDEXX/link-crush/issues)
+**🐛 Found a bug?** <a href="https://github.com/HERALDEXX/link-crush/issues/new" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.shields.io/badge/Report%20Issues-red?style=flat-square&logo=github&logoColor=white" 
+       alt="Report Issues Badge" style="vertical-align: middle;" />
+</a>
 
-**💡 Have a feature idea?** We'd love to hear it in [discussions](https://github.com/HERALDEXX/link-crush/discussions)
+**💡 Have a feature idea?** We'd love to hear it in [discussions](https://github.com/HERALDEXX/link-crush/discussions/new?category=ideas)
