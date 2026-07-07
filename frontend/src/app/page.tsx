@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import AuthBlock from "@/components/AuthBlock";
@@ -10,6 +11,11 @@ import Toast from "@/components/Toast";
 export default function Home() {
   const { user, login, logout, loading: authLoading } = useAuth();
   const { toasts, showToast, removeToast } = useToast();
+  const [statsRefreshKey, setStatsRefreshKey] = useState(0);
+
+  const handleUrlShortened = () => {
+    setStatsRefreshKey((current) => current + 1);
+  };
 
   if (authLoading) {
     return (
@@ -78,11 +84,18 @@ export default function Home() {
 
           {/* Main Form */}
           <div className="mb-16">
-            <URLShortenerForm showToast={showToast} />
+            <URLShortenerForm
+              showToast={showToast}
+              onShortened={handleUrlShortened}
+            />
           </div>
 
           {/* Statistics */}
-          <StatisticsTable user={user} showToast={showToast} />
+          <StatisticsTable
+            user={user}
+            showToast={showToast}
+            refreshTrigger={statsRefreshKey}
+          />
         </div>
       </div>
 

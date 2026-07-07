@@ -87,7 +87,7 @@ def normalize_url(raw_url: str):
     # ensure scheme exists before parsing
     parsed0 = urlparse(raw)
     if not parsed0.scheme:
-        raw = 'http://' + raw
+        raw = 'https://' + raw
         parsed0 = urlparse(raw)
 
     # try strict validator first
