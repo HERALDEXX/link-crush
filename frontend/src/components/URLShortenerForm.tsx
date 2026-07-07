@@ -5,15 +5,33 @@ import { apiService } from "@/lib/api";
 
 interface URLShortenerFormProps {
   showToast: (message: string, type?: "success" | "error" | "info") => void;
+  onShortened?: () => void;
 }
 
-export default function URLShortenerForm({ showToast }: URLShortenerFormProps) {
+export default function URLShortenerForm({
+  showToast,
+  onShortened,
+}: URLShortenerFormProps) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     shortUrl: string;
     originalUrl: string;
   } | null>(null);
+
+  const normalizeUrl = (value: string) => {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return "";
+    }
+
+    if (/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(trimmed)) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,15 +41,19 @@ export default function URLShortenerForm({ showToast }: URLShortenerFormProps) {
       return;
     }
 
+    const normalizedUrl = normalizeUrl(url);
+
     setLoading(true);
     setResult(null);
 
     try {
-      const response = await apiService.shortenUrl(url);
+      const response = await apiService.shortenUrl(normalizedUrl);
       setResult({
         shortUrl: response.shortUrl!,
         originalUrl: response.originalUrl,
       });
+
+      onShortened?.();
 
       if (response.message) {
         showToast(response.message, "info");
@@ -41,7 +63,7 @@ export default function URLShortenerForm({ showToast }: URLShortenerFormProps) {
     } catch (error: any) {
       showToast(
         error.response?.data?.error || "Failed to shorten URL",
-        "error"
+        "error",
       );
     } finally {
       setLoading(false);
@@ -82,8 +104,9 @@ export default function URLShortenerForm({ showToast }: URLShortenerFormProps) {
               <div className="relative group/input">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500/50 to-indigo-500/50 rounded-2xl blur opacity-0 group-hover/input:opacity-30 transition-all duration-300"></div>
                 <input
-                  type="url"
-                  placeholder="https://your-super-long-url-here.com/with/many/parameters"
+                  type="text"
+                  inputMode="url"
+                  placeholder="your-super-long-url-here.com/with/many/parameters"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   className="relative w-full px-6 py-4 bg-white/10 backdrop-blur border border-white/30 rounded-2xl text-white placeholder-white/50 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400/50 transition-all duration-300 hover:bg-white/15 hover:border-white/40"

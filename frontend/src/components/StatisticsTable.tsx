@@ -1,27 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { URLStats, User } from "@/lib/types";
 import { apiService } from "@/lib/api";
 
 interface StatisticsTableProps {
   user: User | null;
   showToast: (message: string, type?: "success" | "error" | "info") => void;
+  refreshTrigger?: number;
 }
 
 export default function StatisticsTable({
   user,
   showToast,
+  refreshTrigger = 0,
 }: StatisticsTableProps) {
   const [stats, setStats] = useState<URLStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"clickCount" | "dateAdded">(
-    "clickCount"
+    "clickCount",
   );
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       setLoading(true);
       const data = await apiService.getStats();
@@ -31,7 +33,7 @@ export default function StatisticsTable({
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   // Sort stats based on current criteria
   const sortedStats = [...stats].sort((a, b) => {
@@ -56,7 +58,7 @@ export default function StatisticsTable({
 
   useEffect(() => {
     loadStats();
-  }, []);
+  }, [loadStats, refreshTrigger]);
 
   const copyShortUrl = async (shortCode: string) => {
     const shortUrl = `${process.env.NEXT_PUBLIC_SHORT_URL_BASE}/${shortCode}`;
@@ -189,7 +191,7 @@ export default function StatisticsTable({
                         value={sortBy}
                         onChange={(e) =>
                           setSortBy(
-                            e.target.value as "clickCount" | "dateAdded"
+                            e.target.value as "clickCount" | "dateAdded",
                           )
                         }
                         className="bg-white/10 backdrop-blur border border-white/20 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 cursor-pointer hover:bg-white/15 transition-all duration-300"
